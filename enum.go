@@ -110,3 +110,13 @@ func Strings[E Enum](e E) []string {
 	}
 	return descriptions
 }
+
+// Indexes returns the registered values of the given Enum type.
+// It panics if the given Enum type is not registered yet.
+func Indexes[E Enum](e E) []E {
+	x, registered := enumSet.Get(e.EnumUid())
+	if !registered {
+		panic(errNotRegisteredYet(typeName(e, true)))
+	}
+	return x.(*setMember[E]).oneof
+}

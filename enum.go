@@ -81,3 +81,17 @@ func Validate[E Enum](e E) error {
 	}
 	return errInvalidValue(member.shortName, member.oneof, e)
 }
+
+// String returns the description of the given Enum value or an empty string if the description is not found.
+// It panics if the given Enum type is not registered yet.
+func String[E Enum](e E) string {
+	x, registered := enumSet.Get(e.EnumUid())
+	if !registered {
+		panic(errNotRegisteredYet(typeName(e, true)))
+	}
+	member := x.(*setMember[E])
+	if desc, found := member.description[e]; found {
+		return desc
+	}
+	return ""
+}

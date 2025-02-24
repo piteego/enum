@@ -95,3 +95,18 @@ func String[E Enum](e E) string {
 	}
 	return ""
 }
+
+// Strings returns the descriptions of the registered values of the given Enum type.
+// It panics if the given Enum type is not registered yet.
+func Strings[E Enum](e E) []string {
+	x, registered := enumSet.Get(e.EnumUid())
+	if !registered {
+		panic(errNotRegisteredYet(typeName(e, true)))
+	}
+	member := x.(*setMember[E])
+	descriptions := make([]string, len(member.oneof))
+	for i := range member.oneof {
+		descriptions[i] = member.description[member.oneof[i]]
+	}
+	return descriptions
+}

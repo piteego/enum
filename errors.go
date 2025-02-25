@@ -17,6 +17,6 @@ func errNotRegisteredYet(enumName string) error {
 	return fmt.Errorf("[Enum] %q %w", enumName, ErrNotRegisteredYet)
 }
 
-func errInvalidValue[V interface{ ~string | Enum }](enumName string, expected []V, got V) error {
+func errInvalidValue(enumName string, expected any, got any) error {
 	return fmt.Errorf("[Enum] %w for %s: must be one of %v, got %v", ErrInvalidValue, enumName, expected, got)
 }

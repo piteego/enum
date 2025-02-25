@@ -30,8 +30,12 @@ const (
 	Green            // 2
 )
 ```
+By implementing the identifier interface as following:
 
-By registering your enum as following:
+```go
+func(Light) EnumUid() string {return "traffic.Light"}
+```
+You can register your enum as following:
 
 ```go
 package traffic
@@ -47,7 +51,7 @@ func init() {
 }
 ```
 
-You can use some fancy methods as following:
+And enjoy some fancy functions to interact with your enum values:
 
 - ***Is***: checks if the given value is equal to your target enum values.
 
@@ -60,6 +64,7 @@ You can use some fancy methods as following:
 
 ```go
     enum.Validate(traffic.Light(0))  // Output: nil
+	enum.Validate[traffic.Light](0) // Output: nil
     enum.Validate(traffic.Red)  // Output: nil
 	err := enum.Validate(traffic.Light(3))  // Output: [Enum] invalid enum value for traffic.Light: must be one of [0,1,2], got 3 
 	errors.Is(err, enum.ErrInvalidValue) // Output: true
@@ -72,4 +77,23 @@ You can use some fancy methods as following:
 	red, err := enum.New[traffic.Light]("red") 
 	// Output: nil, [Enum] invalid enum value for traffic.Light: must be one of [Red,Yellow,Green], got red
 	errors.Is(err, enum.ErrInvalidValue) // Output: true
+```
+
+- ***String***: returns the string representation of the given enum value.
+
+```go
+    enum.String(traffic.Red)  // Output: "Red"
+	enum.String(traffic.Light(3))  // Output: ""
+```
+
+- ***Strings***: returns slice of string for the given enum type.
+
+```go
+    enum.Strings[traffic.Light]() // Output: []string{"Red", "Yellow", "Green"}
+```
+
+- ***Values***: returns slice of enum values.
+
+```go
+    enum.Values[traffic.Light]() // Output: []traffic.Light{0, 1, 2}
 ```

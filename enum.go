@@ -3,6 +3,7 @@ package enum
 import (
 	"fmt"
 	"reflect"
+	"slices"
 )
 
 type (
@@ -98,7 +99,8 @@ func String[E Enum](e E) string {
 
 // Strings returns the descriptions of the registered values of the given Enum type.
 // It panics if the given Enum type is not registered yet.
-func Strings[E Enum](e E) []string {
+func Strings[E Enum]() []string {
+	var e E
 	x, registered := enumSet.Get(e.EnumUid())
 	if !registered {
 		panic(errNotRegisteredYet(typeName(e, true)))
@@ -111,12 +113,23 @@ func Strings[E Enum](e E) []string {
 	return descriptions
 }
 
-// Indexes returns the registered values of the given Enum type.
+// Values returns the registered values of the given Enum type except the optional "but" values.
 // It panics if the given Enum type is not registered yet.
-func Indexes[E Enum](e E) []E {
+func Values[E Enum](but ...E) []E {
+	var e E
 	x, registered := enumSet.Get(e.EnumUid())
 	if !registered {
 		panic(errNotRegisteredYet(typeName(e, true)))
 	}
-	return x.(*setMember[E]).oneof
+	member := x.(*setMember[E])
+	if len(but) == 0 {
+		return member.oneof
+	}
+	result := make([]E, 0, len(member.oneof))
+	for i := range member.oneof {
+		if !Is(member.oneof[i], but[0], but[1:]...) {
+			result = append(result, member.oneof[i])
+		}
+	}
+	return slices.Clip(result)
 }

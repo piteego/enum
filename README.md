@@ -51,49 +51,54 @@ func init() {
 }
 ```
 
-And enjoy some fancy functions to interact with your enum values:
+Now you can enjoy some fancy functions to interact with your enums:
 
-- ***Is***: checks if the given value is equal to your target enum values.
+- **Is**: checks if the given value is equal to your target enum values.
 
 ```go
     enum.Is(traffic.Light(0), traffic.Red)                   // Output: true
     enum.Is(traffic.Light(1), traffic.Red, traffic.Green)    // Output: false
 ```
 
-- ***Validate***: checks if the given value is a valid enum value.
+- **Validate**: checks if the given value is a valid enum value.
 
 ```go
-    enum.Validate(traffic.Light(0))  // Output: nil
-	enum.Validate[traffic.Light](0) // Output: nil
-    enum.Validate(traffic.Red)  // Output: nil
-	err := enum.Validate(traffic.Light(3))  // Output: [Enum] invalid enum value for traffic.Light: must be one of [0,1,2], got 3 
-	errors.Is(err, enum.ErrInvalidValue) // Output: true
+    enum.Validate(traffic.Light(0)) // Output: nil
+    enum.Validate[traffic.Light](0) // Output: nil
+    enum.Validate(traffic.Red)      // Output: nil
+    err := enum.Validate(traffic.Light(3))  // Output: [Enum] invalid enum value for traffic.Light: must be one of [0,1,2], got 3 
+    errors.Is(err, enum.ErrInvalidValue)    // Output: true
 ```
 
-- ***New***: creates a new enum value from the given string.
+- **New**: creates a new enum value from the given string.
 
 ```go
-    enum.New[traffic.Light]("Red")  // Output: enum=pointer to traffic.Red, err= nil 
-	red, err := enum.New[traffic.Light]("red") 
-	// Output: nil, [Enum] invalid enum value for traffic.Light: must be one of [Red,Yellow,Green], got red
-	errors.Is(err, enum.ErrInvalidValue) // Output: true
+    enum.New[traffic.Light]("Red")       // Output: &traffic.Red, nil
+    red, err := enum.New[traffic.Light]("red") 
+    // Output: 
+	// - red: nil,
+	// - err: [Enum] invalid enum value for traffic.Light: must be one of [Red,Yellow,Green], got red
+    errors.Is(err, enum.ErrInvalidValue) // Output: true
 ```
 
-- ***String***: returns the string representation of the given enum value.
+- **String**: returns the string representation of the given enum value.
 
 ```go
     enum.String(traffic.Red)  // Output: "Red"
-	enum.String(traffic.Light(3))  // Output: ""
+    enum.String[traffic.Light](0) // Output: "Red"
+    enum.String(traffic.Light(3))  // Output: ""
 ```
 
-- ***Strings***: returns slice of string for the given enum type.
+- **Strings**: returns slice of string for the given enum type.
 
 ```go
     enum.Strings[traffic.Light]() // Output: []string{"Red", "Yellow", "Green"}
 ```
 
-- ***Values***: returns slice of enum values.
+- **Values**: returns slice of enum values for the given enum type except the optional "but" values.
 
 ```go
-    enum.Values[traffic.Light]() // Output: []traffic.Light{0, 1, 2}
+    enum.Values[traffic.Light]()  // Output: []traffic.Light{2}
+    enum.Values(traffic.Red)      // Output: []traffic.Light{0, 1, 2}
+    enum.Values(traffic.Red, 1)   // Output: []traffic.Light{1, 2}
 ```
